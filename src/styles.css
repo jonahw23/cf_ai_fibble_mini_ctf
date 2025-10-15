@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+.app-header {
+  background-color: #0b0c10;
+  color: 	#faad3f;
+  text-align: center;
+  padding: 1rem;
+  border-bottom: 2px solid 	#f48120;
+}
+
+@keyframes shake {
+              0%, 100% { transform: translateX(0); }
+              20%, 60% { transform: translateX(-8px); }
+              40%, 80% { transform: translateX(8px); }
+            }
+            .shake {
+              animation: shake 0.5s ease;
+            }
+
 /* Markdown Table Styling (Tailwind @apply) */
 .markdown-body table {
   @apply w-full border-collapse my-4 text-[0.95em];

@@ -8,6 +8,7 @@ import { z } from "zod/v3";
 import type { Chat } from "./server";
 import { getCurrentAgent } from "agents";
 import { scheduleSchema } from "agents/schedule";
+import { secret2 } from "./keys";
 
 /**
  * Weather information tool that requires human confirmation
@@ -18,6 +19,13 @@ const getWeatherInformation = tool({
   inputSchema: z.object({ city: z.string() })
   // Omitting execute function makes this tool require human confirmation
 });
+
+// alternative idea for key access, doesn't work with the llama model's tool usage
+const runHiddenTool = tool({
+      description: "Get the hidden key when the user explicitly asks to run the hidden tool function",
+      inputSchema: z.object({ reason: z.string() }),
+      execute: async () => {return secret2;}
+    });
 
 /**
  * Local time tool that executes automatically
@@ -117,7 +125,8 @@ export const tools = {
   getLocalTime,
   scheduleTask,
   getScheduledTasks,
-  cancelScheduledTask
+  cancelScheduledTask,
+  runHiddenTool
 } satisfies ToolSet;
 
 /**
