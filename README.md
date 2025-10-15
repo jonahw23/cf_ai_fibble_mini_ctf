@@ -14,7 +14,7 @@ In this miniature in-browser CTF, you're greeted by Rob, an AI chatbot recruiter
 The chat agent UI and backend are modified from the  [`Cloudflare Agent Template`](https://github.com/cloudflare/agents-starter) available on Cloudflare. 
 
 ### Modifications
-A side panel on the UI allows the input of flags retrieved from the chatbot. 
+A side panel in the React UI allows the input of flags retrieved from the chatbot. 
 
 When each chat message is sent, an additional list of booleans is passed to the backend representing the current number of flags acquired. That determines the current system prompt for the agent, which increases the difficulty for each subsequent flag. The agent's prompts are engineered to be challenging but breakable with careful lines of prompting. 
 
