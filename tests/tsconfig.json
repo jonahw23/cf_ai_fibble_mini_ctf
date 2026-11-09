@@ -3,7 +3,7 @@
   "compilerOptions": {
     "types": [
       "@cloudflare/workers-types",
-      "@cloudflare/vitest-plugin",
+      "@cloudflare/vitest-plugin/types",
       "../env.d.ts"
     ]
   },

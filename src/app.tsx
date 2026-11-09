@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: it's alright */
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useAgent } from "agents/react";
-import { isToolUIPart } from "ai";
+import { isToolUIPart, type UIMessage } from "ai";
 import { useAgentChat } from "@cloudflare/ai-chat/react";
 import type { tools } from "./tools";
 
@@ -17,7 +17,6 @@ import { secret1, secret2, secret3 } from "./keys";
 
 // Icon imports
 import {
-  Bug,
   Moon,
   Robot,
   Sun,
@@ -38,7 +37,7 @@ export default function Chat() {
     const savedTheme = localStorage.getItem("theme");
     return (savedTheme as "dark" | "light") || "dark";
   });
-  const [showDebug, setShowDebug] = useState(false); // for now, hide the debug mode option
+  const showDebug = false;
   const [textareaHeight, setTextareaHeight] = useState("auto");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -90,10 +89,7 @@ export default function Chat() {
     setAgentInput(e.target.value);
   };
 
-  const handleAgentSubmit = async (
-    e: React.FormEvent,
-    extraData: Record<string, unknown> = {}
-  ) => {
+  const handleAgentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!agentInput.trim()) return;
 
@@ -101,18 +97,10 @@ export default function Chat() {
     setAgentInput("");
 
     // Send message to agent
-    await sendMessage(
-      {
-        role: "user",
-        parts: [
-          { type: "text", text: message },
-          { type: "reasoning", text: JSON.stringify(verified) }
-        ]
-      },
-      {
-        body: extraData
-      }
-    );
+    sendMessage({
+      role: "user",
+      parts: [{ type: "text", text: message }]
+    });
   };
 
   const [flags, setFlags] = useState<string[]>(["", "", ""]);
@@ -125,15 +113,15 @@ export default function Chat() {
     clearHistory,
     status,
     sendMessage,
-    stop,
-  } = useAgentChat({
+    stop
+  } = useAgentChat<unknown, UIMessage<{ createdAt: string }>>({
     agent,
     body: () => ({
       flags: verified,
       annotations: {
-        hello: "world",
-      },
-    }),
+        hello: "world"
+      }
+    })
   });
 
   // Scroll to bottom when messages change
@@ -141,7 +129,7 @@ export default function Chat() {
     agentMessages.length > 0 && scrollToBottom();
   }, [agentMessages, scrollToBottom]);
 
-  const pendingToolCallConfirmation = agentMessages.some((m: UIMessage) =>
+  const pendingToolCallConfirmation = agentMessages.some((m) =>
     m.parts?.some(
       (part) =>
         isToolUIPart(part) &&
@@ -378,15 +366,7 @@ export default function Chat() {
                                   toolCallId={toolCallId}
                                   needsConfirmation={needsConfirmation}
                                   onSubmit={({ toolCallId, result }) => {
-                                    addToolResult({
-                                      tool: part.type.replace("tool-", ""),
-                                      toolCallId,
-                                      output: result
-                                    });
-                                  }}
-                                  addToolResult={(toolCallId, result) => {
-                                    addToolResult({
-                                      tool: part.type.replace("tool-", ""),
+                                    addToolOutput({
                                       toolCallId,
                                       output: result
                                     });
@@ -410,11 +390,7 @@ export default function Chat() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleAgentSubmit(e, {
-                annotations: {
-                  hello: "world"
-                }
-              });
+              handleAgentSubmit(e);
               setTextareaHeight("auto"); // Reset height after submission
             }}
             className="p-3 bg-neutral-50 absolute bottom-0 left-0 right-0 z-10 border-t border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900"

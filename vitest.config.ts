@@ -1,11 +1,12 @@
-import { defineWorkersConfig } from "@cloudflare/vitest-plugin/config";
+import { cloudflareTest } from "@cloudflare/vitest-plugin";
+import { defineConfig } from "vitest/config";
 
-export default defineWorkersConfig({
-  environments: {
-    ssr: {
-      keepProcessEnv: true
-    }
-  },
+export default defineConfig({
+  plugins: [
+    cloudflareTest({
+      wrangler: { configPath: "./wrangler.jsonc" }
+    })
+  ],
   test: {
     // https://github.com/cloudflare/workers-sdk/issues/9822
     deps: {
@@ -13,11 +14,6 @@ export default defineWorkersConfig({
         ssr: {
           include: ["ajv"]
         }
-      }
-    },
-    poolOptions: {
-      workers: {
-        wrangler: { configPath: "./wrangler.jsonc" }
       }
     }
   }

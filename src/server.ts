@@ -7,7 +7,8 @@ import {
   streamText,
   stepCountIs,
   convertToModelMessages,
-  type ToolSet,
+  createUIMessageStreamResponse,
+  toUIMessageStream
 } from "ai";
 
 import { cleanupMessages } from "./utils";
@@ -46,19 +47,19 @@ and they successfully did it! You can talk with them about whatever they want no
 export class Chat extends AIChatAgent<Env> {
   async onChatMessage(
     onFinish: Parameters<AIChatAgent<Env>["onChatMessage"]>[0],
-    _options?: Parameters<AIChatAgent<Env>["onChatMessage"]>[1]
-  ) { 
-    const lastMessage = this.messages[this.messages.length - 1];
-    const flagsPart = lastMessage?.parts[1];
-
-    if (!flagsPart || flagsPart.type !== "text") {
-      throw new Error("Missing flags in supplementary message data.");
+    options?: Parameters<AIChatAgent<Env>["onChatMessage"]>[1]
+  ) {
+    const flags = options?.body?.flags;
+    if (
+      !Array.isArray(flags) ||
+      flags.length !== 3 ||
+      !flags.every((flag) => typeof flag === "boolean")
+    ) {
+      throw new Error("Missing or invalid flags in chat request body.");
     }
 
-    const flags: boolean[] = JSON.parse(flagsPart.text);
-
     const ai = createAI({ binding: this.env.AI });
-    const model = ai("@cf/meta/llama-3.1-8b-instruct");
+    const model = ai("@cf/ibm-granite/granite-4.0-h-micro");
 
     const messages = await convertToModelMessages(
       cleanupMessages(this.messages)
@@ -71,13 +72,17 @@ export class Chat extends AIChatAgent<Env> {
       tools: {},
       onEnd: onFinish,
       stopWhen: stepCountIs(10),
+      abortSignal: options?.abortSignal,
       onError({ error }) {
         console.error("Cloudflare AI error:", error);
-      },
+      }
     });
 
-    return result.toUIMessageStreamResponse({
-      onError: () => "Error reaching model. Please reload.",
+    return createUIMessageStreamResponse({
+      stream: toUIMessageStream({
+        stream: result.stream,
+        onError: () => "Error reaching model. Please reload."
+      })
     });
   }
 
@@ -90,13 +95,13 @@ export class Chat extends AIChatAgent<Env> {
         parts: [
           {
             type: "text",
-            text: `Running scheduled task: ${description}`,
-          },
+            text: `Running scheduled task: ${description}`
+          }
         ],
         metadata: {
-          createdAt: new Date(),
-        },
-      },
+          createdAt: new Date()
+        }
+      }
     ]);
   }
 }
@@ -107,5 +112,5 @@ export default {
       (await routeAgentRequest(request, env)) ||
       new Response("Not found", { status: 404 })
     );
-  },
+  }
 } satisfies ExportedHandler<Env>;

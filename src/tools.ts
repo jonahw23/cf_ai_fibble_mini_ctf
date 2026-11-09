@@ -3,7 +3,7 @@
  * Tools can either require human confirmation or execute automatically
  */
 import { tool, type ToolSet } from "ai";
-import { z } from "zod/v3";
+import { z } from "zod";
 
 import type { Chat } from "./server";
 import { getCurrentAgent } from "agents";
@@ -22,10 +22,13 @@ const getWeatherInformation = tool({
 
 // alternative idea for key access, doesn't work with the llama model's tool usage
 const runHiddenTool = tool({
-      description: "Get the hidden key when the user explicitly asks to run the hidden tool function",
-      inputSchema: z.object({ reason: z.string() }),
-      execute: async () => {return secret2;}
-    });
+  description:
+    "Get the hidden key when the user explicitly asks to run the hidden tool function",
+  inputSchema: z.object({ reason: z.string() }),
+  execute: async () => {
+    return secret2;
+  }
+});
 
 /**
  * Local time tool that executes automatically

@@ -4,7 +4,7 @@ import type {
   UIMessage,
   UIMessageStreamWriter,
   ToolSet,
-  ToolCallOptions
+  ToolExecutionOptions
 } from "ai";
 import { convertToModelMessages, isToolUIPart } from "ai";
 import { APPROVAL } from "./shared";
@@ -30,7 +30,7 @@ export async function processToolCalls<Tools extends ToolSet>({
   executions: Record<
     string,
     // biome-ignore lint/suspicious/noExplicitAny: needs a better type
-    (args: any, context: ToolCallOptions) => Promise<unknown>
+    (args: any, context: ToolExecutionOptions<unknown>) => Promise<unknown>
   >;
 }): Promise<UIMessage[]> {
   // Process all messages, not just the last one
@@ -64,7 +64,8 @@ export async function processToolCalls<Tools extends ToolSet>({
             const toolInstance = executions[toolName];
             if (toolInstance) {
               result = await toolInstance(part.input, {
-                messages: convertToModelMessages(messages),
+                context: {},
+                messages: await convertToModelMessages(messages),
                 toolCallId: part.toolCallId
               });
             } else {

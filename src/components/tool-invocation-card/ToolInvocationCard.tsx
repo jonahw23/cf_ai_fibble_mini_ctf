@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ToolUIPart } from "ai";
+import type { DynamicToolUIPart, ToolUIPart } from "ai";
 import { Robot, CaretDown } from "@phosphor-icons/react";
 import { Button } from "@/components/button/Button";
 import { Card } from "@/components/card/Card";
@@ -21,7 +21,7 @@ function isToolResultWithContent(
 }
 
 interface ToolInvocationCardProps {
-  toolUIPart: ToolUIPart;
+  toolUIPart: ToolUIPart | DynamicToolUIPart;
   toolCallId: string;
   needsConfirmation: boolean;
   onSubmit: ({
@@ -31,7 +31,6 @@ interface ToolInvocationCardProps {
     toolCallId: string;
     result: string;
   }) => void;
-  addToolResult: (toolCallId: string, result: string) => void;
 }
 
 export function ToolInvocationCard({
@@ -39,7 +38,6 @@ export function ToolInvocationCard({
   toolCallId,
   needsConfirmation,
   onSubmit
-  // addToolResult
 }: ToolInvocationCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
