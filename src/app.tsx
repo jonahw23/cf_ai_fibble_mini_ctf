@@ -1,9 +1,8 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: it's alright */
-import { useEffect, useState, useRef, useCallback, use } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useAgent } from "agents/react";
 import { isToolUIPart } from "ai";
-import { useAgentChat } from "agents/ai-react";
-import type { UIMessage } from "@ai-sdk/react";
+import { useAgentChat } from "@cloudflare/ai-chat/react";
 import type { tools } from "./tools";
 
 // Component imports
@@ -116,15 +115,25 @@ export default function Chat() {
     );
   };
 
+  const [flags, setFlags] = useState<string[]>(["", "", ""]);
+  const [verified, setVerified] = useState<boolean[]>([false, false, false]);
+  const [shake, setShake] = useState<boolean[]>([false, false, false]);
+
   const {
     messages: agentMessages,
-    addToolResult,
+    addToolOutput,
     clearHistory,
     status,
     sendMessage,
-    stop
-  } = useAgentChat<unknown, UIMessage<{ createdAt: string }>>({
-    agent
+    stop,
+  } = useAgentChat({
+    agent,
+    body: () => ({
+      flags: verified,
+      annotations: {
+        hello: "world",
+      },
+    }),
   });
 
   // Scroll to bottom when messages change
@@ -147,10 +156,6 @@ export default function Chat() {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
-
-  const [flags, setFlags] = useState<string[]>(["", "", ""]);
-  const [verified, setVerified] = useState<boolean[]>([false, false, false]);
-  const [shake, setShake] = useState<boolean[]>([false, false, false]);
 
   const handleChange = (index: number, value: string) => {
     const newFlags = [...flags];
