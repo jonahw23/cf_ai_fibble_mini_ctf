@@ -30,6 +30,7 @@ import {
 const toolsRequiringConfirmation: (keyof typeof tools)[] = [
   "getWeatherInformation"
 ];
+const flagInputIds = ["flag-1", "flag-2", "flag-3"];
 
 export default function Chat() {
   const [theme, setTheme] = useState<"dark" | "light">(() => {
@@ -154,13 +155,13 @@ export default function Chat() {
   const verifyFlag = (index: number) => {
     var isCorrect = false;
 
-    if (index == 0 && flags[index].trim() === secret1) {
+    if (index === 0 && flags[index].trim() === secret1) {
       isCorrect = true;
     }
-    if (index == 1 && flags[index].trim() === secret2) {
+    if (index === 1 && flags[index].trim() === secret2) {
       isCorrect = true;
     }
-    if (index == 2 && flags[index].trim() === secret3) {
+    if (index === 2 && flags[index].trim() === secret3) {
       isCorrect = true;
     }
 
@@ -473,11 +474,15 @@ export default function Chat() {
 
             {flags.map((flag, i) =>
               i === 0 || verified[i - 1] ? (
-                <div key={i} className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
+                <div key={flagInputIds[i]} className="mb-4">
+                  <label
+                    htmlFor={flagInputIds[i]}
+                    className="block text-sm font-medium mb-1"
+                  >
                     Flag {i + 1}
                   </label>
                   <input
+                    id={flagInputIds[i]}
                     type="text"
                     value={flag}
                     disabled={verified[i]}
@@ -490,6 +495,7 @@ export default function Chat() {
                     } ${shake[i] ? "shake border-red-500" : ""}`}
                   />
                   <button
+                    type="button"
                     onClick={() => verifyFlag(i)}
                     disabled={verified[i]}
                     className={`mt-2 w-full rounded-md text-sm py-2 font-medium ${

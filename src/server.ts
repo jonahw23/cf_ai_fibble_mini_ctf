@@ -72,6 +72,7 @@ export class Chat extends AIChatAgent<Env> {
       tools: {},
       onEnd: onFinish,
       stopWhen: stepCountIs(10),
+      temperature: 0.3,
       abortSignal: options?.abortSignal,
       onError({ error }) {
         console.error("Cloudflare AI error:", error);
