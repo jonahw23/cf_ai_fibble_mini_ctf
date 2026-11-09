@@ -14,6 +14,8 @@ In this miniature in-browser CTF, you're greeted by Rob, an AI chatbot recruiter
 
 The chat agent UI and backend are modified from the [`Cloudflare Agent Template`](https://github.com/cloudflare/agents-starter) available on Cloudflare.
 
+2026: Agentic overall to update to the latest Cloudflare agents SDK and keep project operable.
+
 ### Modifications
 
 A side panel in the React UI allows the input of flags retrieved from the chatbot.
@@ -24,6 +26,6 @@ Some extra Tailwind styling was added to incorporate the _Fibble_ flavor and cle
 
 ### Specifications
 
-The agent uses Cloudflare Workers AI's `@cf/ibm-granite/granite-4.0-h-micro` model. Tools are disabled to ensure the agent stays on task. The advantage of using Cloudflare's agent setup for this project is the easier access to agent memory and system prompts to hide the flags.
+The agent uses Cloudflare Workers AI's `@cf/ibm-granite/granite-4.0-h-micro` model as of 2026. Tools are disabled to ensure the agent stays on task. The advantage of using Cloudflare's agent setup for this project is the easier access to agent memory and system prompts to hide the flags.
 
-AI was consulted during this project for syntax advice and debugging. All code beyond the Cloudflare demo repo was produced by myself.
+AI was consulted during this project for syntax advice, debugging, and migrations.
